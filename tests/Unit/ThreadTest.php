@@ -18,33 +18,41 @@ class ThreadTest extends TestCase
         $this->thread = factory('App\Thread')->create();
     }
 
-    /**
-     * @test
-     */
+    /**@test */
     public function s_thread_has_user()
     {
         $this->assertInstanceOf('App\User', $this->thread->user);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function s_thread_has_replies()
     {
         $this->assertInstanceOf('Illuminate\Database\Eloquent\Collection', $this->thread->replies);
     }
 
-    /**
-     * @test
-     */
+    /**@test */
     public function a_thread_can_add_a_reply()
     {
         $this->thread->addReply([
             'body' => 'ABCDEEJKJKJLJL',
             'user_id' => 1,
         ]);
-
         $this->assertCount(1, $this->thread->replies);
+    }
+
+    /** @test */
+    public function a_thread_belongs_to_channel()
+    {
+        $thread = create('App\Thread');
+        $this->assertInstanceOf('App\Channel', $thread->channel);
+    }
+
+    /** @test */
+    public function thread_link_may_contain_channel_id()
+    {
+        $thread = create('App\Thread');
+
+        $this->assertEquals("/threads/{$thread->channel->slug}/{$thread->id}", $thread->path());
     }
 
 }

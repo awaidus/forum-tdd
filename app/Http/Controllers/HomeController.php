@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    /**
+    /**"workbench.activityBar.visible": true,
      * Create a new controller instance.
      *
      * @return void
