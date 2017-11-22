@@ -11,8 +11,13 @@ class Thread extends Model
     protected $guarded = [];
 
     /**
+     * Thread will always have these eager loading
+     */
+    protected $with = ['user', 'channel'];
+
+    /**
      * Boot the model,
-     * Fire each time the model is called
+     * Eager loading each
      */
     protected static function boot()
     {
@@ -21,6 +26,12 @@ class Thread extends Model
         static::addGlobalScope('replyCount', function ($builder) {
             $builder->withCount('replies');
         });
+
+        /** Deleting related replies when thread delete request is processed */
+        static::deleting(function ($thread) {
+            $thread->replies()->delete();
+        });
+
     }
 
     public function path()

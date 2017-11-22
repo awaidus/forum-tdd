@@ -69,16 +69,36 @@ class ThreadsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $channelId
+     * @param \App\Channel $channel
      * @param  \App\Thread $thread
      * @return Thread
+     * @internal param $channelId
      */
-    public function show($channelId, Thread $thread)
+    public function show($channel, Thread $thread)
     {
         return view('thread.show', [
             'thread' => $thread,
             'replies' => $thread->replies()->paginate(24)
         ]);
+    }
+
+    /**
+     * @param \App\Channel $channel
+     * @param Thread $thread
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Symfony\Component\HttpFoundation\Response
+     */
+    public function destroy($channel, Thread $thread)
+    {
+        $this->authorize('update', $thread);
+
+        //Related replies will be deleted at 'deleting model event' of Thread Model
+        $thread->delete();
+
+        if (request()->wantsJson()) {
+            return response([], 204);
+        }
+
+        return redirect('/threads');
     }
 
     protected function getThreads(Channel $channel, ThreadFilters $filters)
