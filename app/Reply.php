@@ -16,6 +16,13 @@ class Reply extends Model
     protected $with = ['user', 'favorites'];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['favoritesCount', 'isFavorited'];
+
+    /**
      * Onwer of the reply
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

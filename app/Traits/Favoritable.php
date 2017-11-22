@@ -7,6 +7,17 @@ use App\Favorite;
 trait Favoritable
 {
     /**
+     * Boot the trait.
+     */
+    protected static function bootFavoritable()
+    {
+        static::deleting(function ($model) {
+            //get the collection of favorite model and call delete method on each
+            $model->favorites->each->delete();
+        });
+    }
+
+    /**
      * A reply can be favorited.
      *
      * @return \Illuminate\Database\Eloquent\Relations\MorphMany
@@ -19,7 +30,7 @@ trait Favoritable
     /**
      * Favorite the current reply.
      *
-     * @return Model
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function favorite()
     {
@@ -31,13 +42,33 @@ trait Favoritable
     }
 
     /**
+     * Unfavorite the current reply.
+     */
+    public function unfavorite()
+    {
+        $attributes = ['user_id' => auth()->id()];
+
+        $this->favorites()->where($attributes)->get()->each->delete();
+    }
+
+    /**
      * Determine if the current reply has been favorited.
      *
      * @return boolean
      */
     public function isFavorited()
     {
-        return !! $this->favorites->where('user_id', auth()->id())->count();
+        return !!$this->favorites->where('user_id', auth()->id())->count();
+    }
+
+    /**
+     * Fetch the favorited status as a property.
+     *
+     * @return bool
+     */
+    public function getIsFavoritedAttribute()
+    {
+        return $this->isFavorited();
     }
 
     /**
