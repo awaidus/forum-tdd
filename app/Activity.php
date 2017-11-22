@@ -14,7 +14,7 @@ class Activity extends Model
     }
 
     /**
-     * Fetch an activity feed for the given user.
+     * Fetch an activity feed for the given user and group by date.
      *
      * @param  User $user
      * @param  int $take

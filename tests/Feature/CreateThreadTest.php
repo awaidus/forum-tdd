@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Activity;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -81,6 +82,7 @@ class CreateThreadTest extends TestCase
 
         return $this->post('/threads', $thread->toArray());
     }
+
     /** @test */
     function unauthorized_users_may_not_delete_threads()
     {
@@ -93,6 +95,7 @@ class CreateThreadTest extends TestCase
         $this->signIn();
         $this->delete($thread->path())->assertStatus(403);
     }
+
     /** @test */
     function authorized_users_can_delete_threads()
     {
@@ -107,5 +110,7 @@ class CreateThreadTest extends TestCase
 
         $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+
+        $this->assertEquals(0, Activity::count());
     }
 }

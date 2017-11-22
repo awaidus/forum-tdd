@@ -46,10 +46,12 @@ class ActivityTest extends TestCase
 
         create('App\Thread', ['user_id' => auth()->id()], 2);
 
+        //manually update the activity timestamp for test
         auth()->user()->activity()->first()->update(['created_at' => Carbon::now()->subWeek()]);
 
         $feed = Activity::feed(auth()->user(), 50);
 
+        //should return proper format
         $this->assertTrue($feed->keys()->contains(
             Carbon::now()->format('Y-m-d')
         ));
