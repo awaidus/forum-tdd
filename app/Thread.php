@@ -3,11 +3,14 @@
 namespace App;
 
 use App\Filters\ThreadFilters;
+use App\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\Model;
 use PhpParser\Builder;
 
 class Thread extends Model
 {
+    use RecordsActivity;
+
     protected $guarded = [];
 
     /**
