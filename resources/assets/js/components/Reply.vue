@@ -3,8 +3,8 @@
         <div class="panel-heading">
             <div class="level">
                 <h5 class="flex">
-                    <a :href="'/profiles/'+data.owner.name"
-                       v-text="data.owner.name">
+                    <a :href="'/profiles/'+data.user.name"
+                       v-text="data.user.name">
                     </a> said {{ data.created_at }}...
                 </h5>
 
@@ -65,7 +65,10 @@
             update() {
                 axios.patch('/replies/' + this.data.id, {
                 body: this.body
-            });
+                });
+
+                this.editing = false;
+                flash('Updated!');
         },
 
             destroy() {
