@@ -30,7 +30,7 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('thread.index', compact('threads'));
+        return view('threads.index', compact('threads'));
     }
 
     /**
@@ -40,7 +40,7 @@ class ThreadsController extends Controller
      */
     public function create()
     {
-        return view('thread.create');
+        return view('threads.create');
     }
 
     /**
@@ -78,10 +78,7 @@ class ThreadsController extends Controller
      */
     public function show($channel, Thread $thread)
     {
-        return view('thread.show', [
-            'thread' => $thread,
-            'replies' => $thread->replies()->paginate(24)
-        ]);
+        return view('threads.show', compact('thread'));
     }
 
     /**
