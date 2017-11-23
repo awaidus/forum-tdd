@@ -1,6 +1,14 @@
 window._ = require('lodash');
 
-// window.Vue = require('vue');
+
+window.Vue = require('vue');
+
+Vue.prototype.authorize = function (handler) {
+    // Additional admin privileges here.
+    let user = window.App.user;
+
+    return user ? handler(user) : false;
+};
 
 
 try {
