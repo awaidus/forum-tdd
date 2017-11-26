@@ -26,22 +26,19 @@ class Thread extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('replyCount', function ($builder) {
-            $builder->withCount('replies');
-        });
+//        static::addGlobalScope('replyCount', function ($builder) {
+//            $builder->withCount('replies');
+//        });
 
         /** Deleting related replies when thread delete request is processed */
         static::deleting(function ($thread) {
-
             //this is not working on 'model deleting event' bcz its generate simple sql query
             //$thread->replies()->delete();
             //Instead we call model itself to fire an event of deleting
-
             $thread->replies->each(function ($reply) {
                 $reply->delete();
             });
             // This '$thread->replies->each->delete()' is equivalent of above
-
         });
 
     }
@@ -66,6 +63,10 @@ class Thread extends Model
         return $this->hasMany(Reply::class);
     }
 
+    /**
+     * @param $reply
+     * @return Model
+     */
     public function addReply($reply)
     {
         return $this->replies()->create($reply);
