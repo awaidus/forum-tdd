@@ -32,6 +32,6 @@ if (token) {
 window.events = new Vue();
 
 //Register a global event for flash component
-window.flash = function (message) {
-    window.events.$emit('flash', message);
+window.flash = function (message, level = 'success') {
+    window.events.$emit('flash', {message, level});
 };

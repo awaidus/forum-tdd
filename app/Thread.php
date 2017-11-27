@@ -39,13 +39,13 @@ class Thread extends Model
 
         /** Deleting related replies when thread delete request is processed */
         static::deleting(function ($thread) {
-            //this is not working on 'model deleting event' bcz its generate simple sql query
-            //$thread->replies()->delete();
+            //following comment code  is not working on 'model deleting event' bcz its generate simple sql query
+            /*$thread->replies()->delete();*/
             //Instead we call model itself to fire an event of deleting
             $thread->replies->each(function ($reply) {
                 $reply->delete();
             });
-            // This '$thread->replies->each->delete()' is equivalent of above
+            // Short form: '$thread->replies->each->delete()' is equivalent of above
         });
 
     }

@@ -11,12 +11,11 @@ class ThreadSeeder extends Seeder
      */
     public function run()
     {
-        $threads = factory('App\Thread', 50)
+        $threads = factory('App\Thread', 20)
             ->create()
             ->each(function ($thread) {
-                factory('App\Reply', 11)
+                factory('App\Reply', 5)
                     ->create(['thread_id' => $thread->id]);
             });
-
     }
 }
