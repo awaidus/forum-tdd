@@ -25,9 +25,11 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('channels', $channels);
         });
-
         //Another option for sharing variable across all views
         // \View::share('channels', \App\Channel::all());
+
+        //Add new custom validator
+        //\Validator::extend('spamfree', 'App\Rules\SpamFree@passes');
     }
 
     /**
