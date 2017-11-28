@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePostRequest;
 use App\Reply;
 use App\Rules\SpamFree;
 use App\Thread;
-use Illuminate\Http\Request;
+
 
 class RepliesController extends Controller
 {
@@ -30,31 +31,16 @@ class RepliesController extends Controller
     /**
      * @param $channelId
      * @param Thread $thread
-     * @return \Illuminate\Http\RedirectResponse
+     * @param CreatePostRequest $form
+     * @return \Illuminate\Database\Eloquent\Model
      * @internal param Spam $spam
      */
-    public function store($channelId, Thread $thread)
+    public function store($channelId, Thread $thread, CreatePostRequest $form)
     {
-        try {
-            request()->validate([
-                'body' => ['required', new SpamFree],
-            ]);
-
-            $reply = $thread->addReply([
-                'body' => request('body'),
-                'user_id' => auth()->id()
-            ]);
-        } catch (\Exception $e) {
-            return response(
-                'Sorry, your reply could not be saved at this time.', 422
-            );
-        }
-
-        if (request()->expectsJson()) {
-            return $reply->load('user');
-        }
-
-        return back()->with('flash', 'Your reply has been left.');
+        return $thread->addReply([
+            'body' => request('body'),
+            'user_id' => auth()->id()
+        ])->load('owner');
     }
 
     /**
