@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 
 class ThreadsController extends Controller
 {
+    /**
+     * Create a new ThreadsController instance
+     */
     public function __construct()
     {
         $this->middleware('auth')->except(['index', 'show']);
@@ -114,6 +117,7 @@ class ThreadsController extends Controller
         if ($channel->exists) {
             $threads->where('channel_id', $channel->id);
         }
-        return $threads->get();
+
+        return $threads->paginate(25);
     }
 }
