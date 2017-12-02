@@ -6,8 +6,7 @@
             <div class="col-md-8 col-md-offset-2">
                 <div class="page-header">
                     <h1>
-                        {{ $profileUser->name }}:
-                        <small>Activity Log</small>
+                        <avatar-form :user="{{ $profileUser }}"></avatar-form>
                     </h1>
                 </div>
 
