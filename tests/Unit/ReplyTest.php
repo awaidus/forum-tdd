@@ -9,6 +9,7 @@ use Tests\TestCase;
 
 class ReplyTest extends TestCase
 {
+
     use DatabaseMigrations;
 
     /**
@@ -38,17 +39,17 @@ class ReplyTest extends TestCase
     function it_can_detect_all_mentioned_users_in_the_body()
     {
         $reply = new Reply([
-            'body' => '@JaneDoe wants to talk to @JohnDoe'
+            'body' => '@JaneDoe wants to talk to @JohnDoe',
         ]);
 
-        $this->assertEquals(['JaneDoe', 'JohnDoe'], $reply->mentionedUsers());
+        $this->assertEquals([ 'JaneDoe', 'JohnDoe' ], $reply->mentionedUsers());
     }
 
     /** @test */
     function it_wraps_mentioned_usernames_in_the_body_within_anchor_tags()
     {
         $reply = new Reply([
-            'body' => 'Hello @Jane-Doe.'
+            'body' => 'Hello @Jane-Doe.',
         ]);
 
         $this->assertEquals(
@@ -58,4 +59,16 @@ class ReplyTest extends TestCase
 
     }
 
+    /** @test */
+    function it_knows_if_it_is_the_best_reply()
+    {
+        $reply = create('App\Reply');
+
+        $this->assertFalse($reply->isBest());
+
+        $reply->thread->update([ 'best_reply_id' => $reply->id ]);
+
+        $this->assertTrue($reply->fresh()->isBest());
+
+    }
 }

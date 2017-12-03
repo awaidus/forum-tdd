@@ -9,19 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Reply extends Model
 {
+
     use Favoritable, RecordsActivity;
 
     protected $guarded = [];
 
     //Reply will always return with these eager loading
-    protected $with = ['user', 'favorites'];
+    protected $with = [ 'user', 'favorites' ];
 
     /**
      * The accessors to append to the model's array form.
      *
      * @var array
      */
-    protected $appends = ['favoritesCount', 'isFavorited'];
+    protected $appends = [ 'favoritesCount', 'isFavorited' ];
 
 
     /**
@@ -103,5 +104,15 @@ class Reply extends Model
             '<a href="/profiles/$1">$0</a>',
             $body
         );
+    }
+
+    /**
+     * Determine if the current reply is marked as the best.
+     *
+     * @return bool
+     */
+    public function isBest()
+    {
+        return $this->thread->best_reply_id == $this->id;
     }
 }
