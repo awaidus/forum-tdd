@@ -4,20 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use App\Filters\ThreadFilters;
-use App\Inspections\Spam;
 use App\Rules\SpamFree;
 use App\Thread;
+use App\Trending;
 use Illuminate\Http\Request;
 
 
 class ThreadsController extends Controller
 {
+
     /**
      * Create a new ThreadsController instance
      */
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth')->except([ 'index', 'show' ]);
     }
 
     /**
@@ -35,7 +36,21 @@ class ThreadsController extends Controller
             return $threads;
         }
 
-        return view('threads.index', compact('threads'));
+        return view('threads.index', [
+            'threads'  => $threads,
+            'trending' => null,//$trending->get(),
+        ]);
+    }
+
+    protected function getThreads(Channel $channel, ThreadFilters $filters)
+    {
+        $threads = Thread::latest()->filter($filters);
+
+        if ($channel->exists) {
+            $threads->where('channel_id', $channel->id);
+        }
+
+        return $threads->paginate(25);
     }
 
     /**
@@ -57,16 +72,16 @@ class ThreadsController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => ['required', new SpamFree],
-            'body' => ['required', new SpamFree],
+            'title'      => [ 'required', new SpamFree ],
+            'body'       => [ 'required', new SpamFree ],
             'channel_id' => 'required|exists:channels,id',
         ]);
 
         $thread = Thread::create([
-            'user_id' => auth()->id(),
+            'user_id'    => auth()->id(),
             'channel_id' => request('channel_id'),
-            'title' => request('title'),
-            'body' => request('body'),
+            'title'      => request('title'),
+            'body'       => request('body'),
         ]);
 
         return redirect($thread->path())
@@ -79,6 +94,7 @@ class ThreadsController extends Controller
      *
      * @param \App\Channel $channel
      * @param  \App\Thread $thread
+     * @param Trending $trending
      * @return Thread
      * @internal param $channelId
      */
@@ -87,6 +103,10 @@ class ThreadsController extends Controller
         if (auth()->check()) {
             auth()->user()->read($thread);
         }
+
+        //$trending->push($thread);
+
+        $thread->increment('visits');
 
         return view('threads.show', compact('thread'));
     }
@@ -108,16 +128,5 @@ class ThreadsController extends Controller
         }
 
         return redirect('/threads');
-    }
-
-    protected function getThreads(Channel $channel, ThreadFilters $filters)
-    {
-        $threads = Thread::latest()->filter($filters);
-
-        if ($channel->exists) {
-            $threads->where('channel_id', $channel->id);
-        }
-
-        return $threads->paginate(25);
     }
 }
