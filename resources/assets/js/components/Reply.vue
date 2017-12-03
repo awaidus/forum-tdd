@@ -1,22 +1,22 @@
 <template>
-    <div :id="'reply-'+id" class="panel panel-default">
+    <div :id="'reply-'+id" class="panel" :class="isBest ? 'panel-success': 'panel-default'">
         <div class="panel-heading">
             <div class="level">
                 <h5 class="flex">
-                    <a :href="'/profiles/'+data.user.name"
-                       v-text="data.user.name">
+                    <a :href="'/profiles/' + reply.user.name"
+                       v-text="reply.user.name">
                     </a> said <span v-text="ago"></span>
                 </h5>
 
                 <div v-if="signedIn">
-                    <favorite :reply="data"></favorite>
+                    <favorite :reply="reply"></favorite>
                 </div>
             </div>
         </div>
 
         <div class="panel-body">
             <div v-if="editing">
-                <form @submit="update">
+                <form @submit.prevent="update">
                     <div class="form-group">
                         <textarea class="form-control" v-model="body" required></textarea>
                     </div>
@@ -29,9 +29,16 @@
             <div v-else v-html="body"></div>
         </div>
 
-        <div class="panel-footer level" v-if="canUpdate">
-            <button class="btn btn-xs mr-1" @click="editing = true">Edit</button>
-            <button class="btn btn-xs btn-danger mr-1" @click="destroy">Delete</button>
+        <div class="panel-footer level" v-if="authorize('owns', reply) || authorize('owns', reply.thread)">
+            <div v-if="authorize('owns', reply)">
+                <button class="btn btn-xs mr-1" @click="editing = true">Edit</button>
+                <button class="btn btn-xs btn-danger mr-1" @click="destroy">Delete</button>
+            </div>
+
+            <button class="btn btn-xs btn-default ml-a"
+                    @click="markBestReply"
+                    v-if="authorize('owns', reply.thread)">Best Reply?
+            </button>
         </div>
     </div>
 </template>
@@ -41,36 +48,35 @@
     import moment from 'moment';
 
     export default {
-
-        props: ['data'],
+        props: ['reply'],
 
         components: { Favorite },
 
         data() {
             return {
                 editing: false,
-                id: this.data.id,
-                body: this.data.body
+                id: this.reply.id,
+                body: this.reply.body,
+                isBest: this.reply.isBest,
             };
         },
 
         computed: {
-            signedIn() {
-                return window.App.signedIn;
-            },
-
             ago() {
-                return moment(this.data.created_at).fromNow() + '...';
-            },
-
-            canUpdate() {
-                return this.authorize(user => this.data.user_id == user.id);
+                return moment(this.reply.created_at).fromNow() + '...';
             }
+        },
+
+        created () {
+            window.events.$on('best-reply-selected', id => {
+                this.isBest = (id === this.id);
+            });
         },
 
         methods: {
             update() {
-                axios.patch('/replies/' + this.data.id, {
+                axios.patch(
+                    '/replies/' + this.id, {
                         body: this.body
                     })
                     .catch(error => {
@@ -78,14 +84,22 @@
                     });
 
                 this.editing = false;
+
                 flash('Updated!');
-        },
+            },
 
             destroy() {
-             axios.delete('/replies/' + this.data.id);
-             this.$emit('deleted', this.data.id);
+                axios.delete('/replies/' + this.id);
 
+                this.$emit('deleted', this.id);
+            },
+
+            markBestReply() {
+                axios.post('/replies/' + this.id + '/best');
+
+                window.events.$emit('best-reply-selected', this.id);
             }
         }
     }
+
 </script>

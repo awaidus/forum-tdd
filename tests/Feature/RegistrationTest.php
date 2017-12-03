@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Mail\PleaseConfirmYourEmail;
 use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -14,19 +13,19 @@ class RegistrationTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function a_confirmation_email_is_sent_upon_registration()
-    {
-        Mail::fake();
-
-        $this->post(route('register'), [
-            'name'                  => 'John',
-            'email'                 => 'john@example.com',
-            'password'              => 'foobar',
-            'password_confirmation' => 'foobar',
-        ]);
-
-        Mail::assertSent(PleaseConfirmYourEmail::class);
-    }
+//    public function a_confirmation_email_is_sent_upon_registration()
+//    {
+//        Mail::fake();
+//
+//        $this->post(route('register'), [
+//            'name'                  => 'John',
+//            'email'                 => 'john@example.com',
+//            'password'              => 'foobar',
+//            'password_confirmation' => 'foobar',
+//        ]);
+//
+//        Mail::assertSent(PleaseConfirmYourEmail::class);
+//    }
 
     /** @test */
     function user_can_fully_confirm_their_email_addresses()

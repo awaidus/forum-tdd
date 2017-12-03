@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 
 class ThreadSeeder extends Seeder
 {
+
     /**
      * Run the database seeds.
      *
@@ -15,7 +16,14 @@ class ThreadSeeder extends Seeder
             ->create()
             ->each(function ($thread) {
                 factory('App\Reply', 5)
-                    ->create(['thread_id' => $thread->id]);
+                    ->create([ 'thread_id' => $thread->id ]);
             });
+
+        create('App\User', [
+            'name'      => 'awaidus',
+            'email'     => 'm.awaidus@gmail.com',
+            'password'  => bcrypt('pakistan'),
+            'confirmed' => 1,
+        ]);
     }
 }
