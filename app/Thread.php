@@ -41,13 +41,17 @@ class Thread extends Model
 
         /** Deleting related replies when thread delete request is processed */
         static::deleting(function ($thread) {
-            //following comment code  is not working on 'model deleting event' bcz its generate simple sql query
-            /*$thread->replies()->delete();*/
+            //'$thread->replies()->delete()' code is not working on 'model deleting event'
+            // because its generate simple sql query
+
             //Instead we call model itself to fire an event of deleting
             $thread->replies->each(function ($reply) {
                 $reply->delete();
-            });
-            // Short form: '$thread->replies->each->delete()' is equivalent of above
+            }); // Short form: '$thread->replies->each->delete()' is equivalent of above
+        });
+
+        static::created(function ($thread) {
+            $thread->update([ 'slug' => $thread->title ]);
         });
 
     }
@@ -179,30 +183,10 @@ class Thread extends Model
     {
         if (static::whereSlug($slug = str_slug($value))->exists()) {
 
-            $slug = $this->incrementSlug($slug);
+            $slug = "{$slug}-{$this->id}";
         }
-
 
         $this->attributes['slug'] = $slug;
     }
 
-    /**
-     * Increment a slug's suffix.
-     *
-     * @param  string $slug
-     * @return string
-     */
-    protected function incrementSlug($slug)
-    {
-        $max = static::whereTitle($this->title)->latest('id')->value('slug');
-
-        if (is_numeric($max[- 1])) {
-            return preg_replace_callback('/(\d+)$/', function ($matches) {
-                return $matches[1] + 1;
-            }, $max);
-        }
-
-
-        return "{$slug}-2";
-    }
 }
