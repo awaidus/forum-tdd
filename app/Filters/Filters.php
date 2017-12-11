@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 abstract class Filters
 {
+
     /**
      * @var Request
      */
@@ -61,6 +62,6 @@ abstract class Filters
      */
     public function getFilters()
     {
-        return $this->request->only($this->filters);
+        return array_filter($this->request->only($this->filters));
     }
 }
